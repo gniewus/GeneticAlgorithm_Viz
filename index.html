@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Genetic algorithm</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="vendor/introjs/css/introjs.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+
+
+    <!-- Custom styles for this template -->
+    <link href="css/grayscale.min.css" rel="stylesheet">
+
+
+    <script src="js/Chart.bundle.js"></script>
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="vendor/introjs/js/intro.min.js"></script>
+    <script>
+        window.sharedSpace = {};
+        function startIntro() {
+            introJs().start();
+            //introJs().addHints();
+        }
+
+    </script>
+</head>
+
+<body id="page-top">
+<style>
+
+
+    .node rect {
+        /* cursor : move; */
+        /* fill-opacity : .9; */
+        /* shape-rendering : crispEdges; */
+        stroke-width: 0;
+    }
+
+    .node text {
+        pointer-events: none;
+        /* text-shadow : 0 1px 0 #fff; */
+    }
+
+    .link {
+        fill: none;
+    }
+
+    .link-normal {
+        stroke-opacity: .05;
+    }
+
+    .link-strong {
+        stroke-opacity: .11;
+    }
+
+    .link:hover {
+        stroke-opacity: .9;
+    }
+
+    .link-selected {
+        stroke-opacity: 1.0;
+    }
+
+    .static-link-selected {
+        stroke-opacity: 1.0;
+    }
+
+    .node-selected {
+
+        stroke: #2c2c2c !important;
+        stroke-width: 1.5 !important;
+        stroke-opacity: 1.0 !important;
+        z-index: 1 !important;
+    }
+
+    .static-node-selected {
+        fill: #000 !important;
+        stroke: #000 !important;
+        stroke-width: 1 !important;
+        stroke-opacity: 1.0 !important;
+        z-index: 1 !important;
+    }
+
+    .link-strong:hover {
+        stroke-opacity: .5;
+    }
+
+    .rcorners {
+        border-radius: 15px;
+        border: 2px solid #8AC007;
+        padding: 20px;
+    }
+
+    .border {
+        border: 1px solid rgba(11, 22, 33, 0.2);
+        stroke-opacity: .2;
+    }
+
+    .noborder {
+        border: 0px;
+    }
+
+    .line {
+        fill: none;
+        stroke: #ffab00;
+        stroke-width: 3;
+    }
+
+    .overlay {
+        fill: none;
+        pointer-events: all;
+    }
+
+    /* Style the dots by assigning a fill and stroke */
+    .dot {
+        fill: #ffab00;
+        stroke: #fff;
+    }
+
+    .focus circle {
+        fill: none;
+        stroke: steelblue;
+    }
+
+
+</style>
+
+<style>/*HTML Horizonal Legend*/
+.country-name {
+    margin: 0 !important;
+}.introjs-fixedTooltip {
+     position: absolute;
+ }
+
+.key-dot {
+    display: inline-block;
+    height: 10px;
+    margin-right: .5em;
+    width: 10px;
+}
+
+.mutation {
+    background: #001eb4;
+}
+
+.crossover {
+    background: #f3ff00;
+}
+
+.elitism {
+    background: #630053;
+}
+
+#legend2 {
+    overflow: hidden;
+}
+
+.legend2 {
+    margin-top: 0.5em;
+    float: left;
+    position: relative;
+    left: 5em;
+    margin-right: 1em;
+}
+
+.introjs-fixParent {
+    position: static;
+}
+
+</style>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+    <div class="container">
+        <a id="cta" data-hint="Start over the whole game" class="navbar-brand js-scroll-trigger"
+           href="#evolution_container"></a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+                aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link js-scroll-trigger" href="#about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link js-scroll-trigger" href="#viz">Viz</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link js-scroll-trigger" href="#game">Game</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Header -->
+<header class="masthead">
+    <div class="container d-flex h-100 align-items-center">
+        <div class="mx-auto text-center">
+            <h1 class="mx-auto my-0 text-uppercase">Genetic algorithms</h1>
+            <h2 class="text-white-50 mx-auto mt-2 mb-5">Population-centric view </h2>
+            <a data-step="2" data-intro="You should begin by clicking here!" href="#about"
+               class="btn btn-primary js-scroll-trigger">Get Started</a>
+            <button onclick="startIntro()" data-step="1" data-intro="Here you canstart the feature overview. 
+            Whenever you feel lost, please give this button a try!" href="" class="btn btn-info js-scroll-trigger">Show
+                tutorial
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- About Section -->
+<section id="about" class="about-section text-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mx-auto" data-step="3" data-position="right"
+                 data-intro="Here you can read what are GAs.">
+                <h2 class="text-white mb-4">Evolutionary algorithms</h2>
+                <p class="text-white-50 text-justify">Genetic algorithms (GA) are the standard optimization methods and
+                    they operate by evolving a population of trial solutions towards better
+                    results using biological inspired genetic operators. GA belongs to a group of evolutionary
+                    algorithms which are commonly used to find an optimal solution for the most difficult computational
+                    problems which canot be computed using mathematical optimisation methods.
+
+                    The trial solutions are also called individuals.
+                    <img src="img/GAs.svg" style="margin: 1em 0;" class="mx-auto d-block margin" class=""
+                         alt="Step of Genetic Algorithm">
+
+
+                <p><a href="#game" class="btn btn-primary js-scroll-trigger ">Show game</a></p>
+
+            </div>
+            <div class="col-lg-6 mx-auto " data-step="4" data-position="left"
+                 data-intro="If you are not familiar with GAs, here you can read how does it work.">
+                <h2 class="text-white mb-4">How does GA work?</h2>
+                <p class="text-white-50 text-justify">The algorithms start after generating a (random) initial
+                    population. Each of the individuals represents a possible solution to a given problem.
+                    An individual is characterized by a set of parameters (variables) known as Genes. Genes are grouped
+                    together to form a DNA which is represented as an array.
+
+                    <img src="img/genes.svg" style="margin: 1em 0;" class="mx-auto d-block margin"
+                         alt="Step of Genetic Algorithm">
+                    Basically, if it's possible to model a solution to your problem as an ordered sequence of
+                    alphanumeric values, GA can help you quickly find a reasonable result.
+                    As an example, consider the above showed sequence, which is used to control the movements of one car
+                    in the game. Each Gene encodes a 2D vector which determines in which direction should the car move
+                    after each step.
+
+                    Every implementation of a GA follows the pattern depicted on the left. After the random
+                    initialisation of population, the cars are allowed to drive in order to reach the target.
+                    After all of the cars dies, or the time bound of 1000 steps is reached, every car's DNA is evaluated
+                    with simple 'fitness' function which yields the relative "goodness" of the solution.
+
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+<!-- Projects Section -->
+<section id="viz" style="padding: 2rem 0;" class="projects-section  ">
+
+    <div id="evolution_buttons" class="container">
+        <div class="row text-center ">
+            <div class="col-md-4">
+                <span class="text-black-50" style="display: block">Y-axis</span>
+                <div class="btn-group btn-group-toggle" data-toggle="scale_buttons">
+
+                    <label class="btn btn-secondary ">
+                        <input type="radio" id="scaled" autocomplete="off" name="scale_type" value="scaled"> Scaled
+                    </label>
+                    <label class="btn btn-secondary active ">
+                        <input type="radio" id="unscaled" autocomplete="off" name="scale_type" value="unscaled" checked>
+                        Full range
+                    </label>
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+                <span class="text-black-50">Node Sorting:</span>
+                <div class="btn-group btn-group-toggle" data-toggle="scale_buttons">
+                    <label class="btn btn-secondary active">
+                        <input type="radio" name="sort_type" value="fitness" checked> Fitness
+                    </label>
+                    <label class="btn btn-secondary ">
+                        <input type="radio" name="sort_type" value="scaled_size"> Size
+                    </label>
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <span class="text-black-50" style="display: block">Node Color:</span>
+                <div class="btn-group btn-group-toggle" data-toggle="scale_buttons">
+                    <label class="btn btn-secondary active ">
+                        <input type="radio" name="color_type" value="fitness" checked> Fitness
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row" style="margin-bottom:20px">
+        <div id="evolution_container" class="border ">
+            <div id="evolution"  data-step="7" data-intro="Here you can see the convergence of the genetic algorithm. After each generation
+             you can see how does the GA beautifully optimizes the problem. "></div>
+            <div id="legend2">
+                <div class="legend2"><p class="country-name"><span class="key-dot mutation"></span>Mutation</p></div>
+                <div class="legend2"><p class="country-name"><span class="key-dot crossover"></span>Crossover</p></div>
+                <div class="legend2"><p class="country-name"><span class="key-dot bronx"></span>Elitism</p></div>
+            </div>
+        </div>
+        <div id="evolution_loader" style="relative: fixed;top: -5em;left: 20%;"></div>
+
+
+    </div>
+    <div id="game" class="container">
+        <!--       Featured Project Row
+              <div class="row align-items-center no-gutters mb-4 mb-lg-5">
+                <div class="col-xl-8 col-lg-7">
+                  <img class="img-fluid mb-3 mb-lg-0" src="img/pop.png" alt="">
+                </div>
+                <div class="col-xl-4 col-lg-5">
+                  <div class="featured-text text-center text-lg-left">
+                    <h4>Shoreline</h4>
+                    <p class="text-black-50 mb-0">Grayscale is open source and MIT licensed. This means you can use it for any project - even commercial projects! Download it, customize it, and publish your website!</p>
+                  </div>
+                </div>
+              </div> -->
+
+        <!-- Project Two Row -->
+        <div class="row justify-content-center no-gutters">
+            <div class="col-lg-6">
+                <div data-step="5" data-intro="In the top left corner you can see the number of steps, and in the middle the generation counter.
+                 The example game can be controlled using buttons in the navigation bar (above). In order to pause the game click stop,
+                 on the left or click the replay button to start over. " data-position="auto" id="game_container"
+                     style="background: black" class="border">
+                </div>
+            </div>
+            <div class="col-lg-6 order-lg-first">
+                <div class="bg-black text-center h-100 project">
+                    <div class="d-flex h-100">
+                        <div class="project-text w-100 my-auto text-center text-lg-right">
+                            <h4 class="text-white">The game</h4>
+                            <p class="mb-0 text-white-50">In this example we have a population of 64 self-driving cars
+                                which are trying to find the quickest way to the white dot(target).
+                                Each of the these represents one individual in population. Each of them has it's unique
+                                DNA which consists of 1000, "moves" in various direction.
+                            </p>
+                            <hr class="d-none d-lg-block mb-0 mr-0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Project One Row -->
+        <div class="row justify-content-center no-gutters mb-5 mb-lg-0">
+            <div class="col-lg-6">
+
+                <div data-step="6"
+                     data-intro="Line chart depicting the performance measurements of the whole population compared to the best individual. "
+                     id="line-chart" class="chart-container border" style="height: 390px">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="bg-black text-center h-100 project">
+                    <div class="d-flex h-100">
+                        <div class="project-text w-100 my-auto text-center text-lg-left">
+                            <h4 class="text-white">Performance chart</h4>
+                            <p class="mb-0 text-white-50">This line chart depicts the changes in fittness for each
+                                generation. Here you can see the performance difference between the best individials and
+                                the whole population. </p>
+                            <hr class="d-none d-lg-block mb-0 ml-0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</section>
+
+
+<footer class="bg-black small text-center text-white-50">
+    <div class="social d-flex justify-content-center">
+        <a href="#" class="mx-2">
+            <i class="fab fa-linkedin"></i>
+        </a>
+        <a href="#" class="mx-2">
+            <i class="fab fa-github"></i>
+        </a>
+    </div>
+
+    <div class="container">
+        Copyright © Tomasz Tkaczyk
+    </div>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Plugin JavaScript -->
+<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="./js/grayscale.min.js"></script>
+
+
+<script src='./lib/p5.min.js'></script>
+<script src='./lib/p5.dom.js'></script>
+<script src="./lib/d3-sankey.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.1.0/d3-legend.js"></script>
+<script src="lib/genetic.js"></script>
+<script src="js/index.js"></script>
+
+
+<script type="text/javascript" src="lib/d3.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="lib/jquery-2.1.3.min.js"
+        charset="utf-8"></script>
+<script type="text/javascript" src="lib/colorbrewer.js"
+        charset="utf-8"></script>
+<script type="text/javascript" src="lib/flowchart.js" charset="utf-8"></script>
+<script src="js/sankey.js"></script>
+
+</body>
+
+</html>

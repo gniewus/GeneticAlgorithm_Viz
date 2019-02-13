@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<!-- saved from url=(0028)http://karstenahnert.com/gp/ -->
+<html lang="en">
+<script id="launchLiveScript"></script>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
+
+    <link rel="stylesheet" href="./css/bootstrap.min.css"
+     >
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+            integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+            integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+            crossorigin="anonymous"></script>
+
+    <script src="./lib/watch.js"></script>
+    <title>Visualization of a genetic algorithm</title>
+
+</head>
+
+<body>
+<div class="container">
+    <div class="jumbotron text-center ">
+        <h2>Genetic algirithms</h2>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <div id="line-chart" class="chart-container border" style="height: 390px">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div id="game_container" class="border">
+                <div id="game"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="evolution_buttons" class="col-md-10 offset-2">
+    <span>Y-axis</span>
+    <div class="btn-group btn-group-toggle" data-toggle="scale_buttons">
+
+        <label class="btn btn-secondary ">
+            <input type="radio" id="scaled" autocomplete="off" name="scale_type" value="scaled"> Scaled
+        </label>
+        <label class="btn btn-secondary active ">
+            <input type="radio" id="unscaled" autocomplete="off" name="scale_type" value="unscaled" checked>
+            Full range
+        </label>
+
+
+    </div>
+
+    <label>Node Sorting:</label>
+    <div class="btn-group btn-group-toggle" data-toggle="scale_buttons">
+        <label class="btn btn-secondary active">
+            <input type="radio" name="sort_type" value="fitness" checked> Fitness
+        </label>
+        <label class="btn btn-secondary ">
+            <input type="radio" name="sort_type" value="scaled_size"> Size
+        </label>
+
+    </div>
+    <span>Node Color:</span>
+    <div class="btn-group btn-group-toggle" data-toggle="scale_buttons">
+
+        <label class="btn btn-secondary active ">
+        <input type="radio" name="color_type" value="fitness" checked> Fitness
+    </label>
+        <label class="btn btn-secondary ">
+            <input type="radio" name="color_type" value="size"> Size
+        </label>
+
+    </div>
+</div>
+
+
+
+<main>
+
+    <!--
+        <p><a target="_blank" href="http://en.wikipedia.org/wiki/Genetic_algorithm">Genetic algorithms</a> (GA) are one of
+            the standard optimization methods. They work by evolving a population of trial solutions towards better
+            solutions using biological inspired genetic operators. The trial solutions are also called individuums. The
+            above graphics shows the evolution of a particular genetic algorithm - <a target="_blank"
+            above graphics shows the evolution of a particular genetic algorithm - <a target="_blank"
+                                                                                      href="http://en.wikipedia.org/wiki/Genetic_programming">genetic
+                programming</a> - solving a problem of <a target="_blank"
+                                                          href="http://en.wikipedia.org/wiki/Symbolic_regression">symbolic
+                regression</a>. It shows beautifully how the GA optimizes the problem. The above graphic can be used for
+            visual debugging. Furthermore, it uncovers the beauty of a complex algorithm.</p>
+
+        <ul>
+            <li>The evolution of 12 generations each consisting of 256 individuums is shown.</li>
+            <li>The link colors encode the genetic operator. Red is elite, blue is mutation, green is crossover and yellow
+                reproduction.
+            </li>
+            <li>The y-position of the nodes can encode the fitness, the size, or the height of the according individuum. And
+                the position of the y-node can describe either the absolute value of the fitness, the size, or the height or
+                the sequence in the population.
+            </li>
+            <li>The node colors can describe the fitness, the size, or the height of the individuum.</li>
+            <li><b>The history of a individuum, hence all its ancestors and the genetic operators used to create the
+                individuum can be highlighted by moving the mouse over a specific individuum.</b></li>
+        </ul>
+
+        <p>Conclustions from the graphic:</p>
+        <ul>
+            <li>The convergence of the genetic algorithm can be seen. In this example it is rarely good. The software for
+                the genetic programming is still in an early beta phase.
+            </li>
+            <li>Mutation is not very effective and results often in bad individuals.</li>
+            <li>Size grows during evolution, a hint for bloat.</li>
+            <li>Height grows during evolution, a hint for bloat.</li>
+            <li>Most individuums have the same ancestors.</li>
+        </ul>
+
+        <p>This work has been done with the help of <a target="_blank" href="https://github.com/Ambrosys/gpcxx">gpcxx</a> a
+            modern C++ library for genetic programming which has produced the data for the above graphic. The development of
+            this library is still in an early stage. The visualization has been done with the help of <a target="_blank"
+                                                                                                         href="http://d3js.org/">d3.js</a>
+            a great javascript framework of interactive visualizations. The graphic as been inspired by Sankey diagrams and
+            the <a target="_blank" href="https://github.com/d3/d3-plugins/tree/master/sankey">Sankey plugin</a> for d3 js.
+            <a target="_blank" href="https://jquery.com/">jquery</a> has also been used for general purpose stuff.</p>
+
+        <p>If you need help with visualization of data or algorithms or optimization algorithms in general just drop me a
+            message here.</p>
+    -->
+
+</main>
+<script>
+    window.sharedSpace = {};
+
+</script>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.4/p5.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.4/addons/p5.dom.js'></script>
+<script src="https://unpkg.com/d3-sankey@0"></script>
+
+<script src="lib/genetic.js"></script>
+<script src="js/index.js"></script>
+
+
+<script type="text/javascript" src="lib/d3.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="lib/jquery-3.1.3.min.js"
+        charset="utf-8"></script>
+<script type="text/javascript" src="lib/colorbrewer.js"
+        charset="utf-8"></script>
+<script type="text/javascript" src="lib/flowchart.js" charset="utf-8"></script>
+<script src="js/sankey.js"></script>
+
+<script>
+
+</script>
+<style type="text/css">
+    /* 13. Basic Styling with CSS */
+
+    /* Style the lines by removing the fill and applying a stroke */
+    .line {
+        fill: none;
+        stroke: #ffab00;
+        stroke-width: 3;
+    }
+
+    .overlay {
+        fill: none;
+        pointer-events: all;
+    }
+
+    /* Style the dots by assigning a fill and stroke */
+    .dot {
+        fill: #ffab00;
+        stroke: #fff;
+    }
+
+    .focus circle {
+        fill: none;
+        stroke: steelblue;
+    }
+
+</style>
+<!-- Body tag is where we will append our SVG and SVG objects-->
+<body>
+</body>
+
+
+</body>
+</html>
